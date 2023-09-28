@@ -9,6 +9,7 @@ const path = require('path')
 const { Sequelize } = require('sequelize')
 const { proxies } = require('./constants')
 const { default: Axios } = require('axios')
+require('dotenv').config();
 
 const setupPuppeteer = async options => {
 	const {
@@ -388,7 +389,7 @@ const messageBot = async msg => {
 	let data = getKey[0].data.thread
 	let thread = data
 
-	let messagesThread = await message(`Homedepot Batch ${process.env.BATCH}`, [
+	let messagesThread = await message(`Lowes Batch ${process.env.BATCH}`, [
 		{
 			textParagraph: {
 				text: msg,
