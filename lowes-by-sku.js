@@ -201,7 +201,7 @@ let lcpLowes = async (payload, datas, loop, modelOnServer) => {
     const args = [
         '--no-sandbox',
         '--disable-setuid-sandbox',
-        // '--headless',
+        '--headless',
         '--disable-dev-shm-usage',
         '--disable-accelerated-2d-canvas',
         '--no-first-run',
