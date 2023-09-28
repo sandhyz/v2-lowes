@@ -342,38 +342,63 @@ const checkIp = async loop => {
 	})
 }
 
-const messageBot = async msg => {
-	
-	let url = 'https://chat.googleapis.com/v1/spaces/AAAAYbHImp0/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=2NGPvJHk_lQn6Xu7DsQGjZr2mYRL82UZiYNjfTME8qI'
-	let cardMessage = {
-		"cardsV2": [
+const message = async (title, widgets, threadKey) => {
+	const cardMessage = {
+		cards: [
 			{
-				"cardId": "unique-card-id",
-				"card": {
-					"header": {
-						"title": "LCP Batch 1 Report"
+				header: {
+					title: title,
+				},
+				sections: [
+					{
+						widgets: widgets
 					},
-					"sections": [
-						{
-							"widgets": [
-								{
-									"decoratedText": {
-										"text": msg
-									}
-								}
-							]
-						}
-					]
-				}
-			}
-		]
-	}
-	await Axios.post(url, cardMessage, {
-		headers: {
-			'content-type': 'application/json',
-			'charset': 'UTF-8'
+				],
+			},
+		],
+		thread: {
+			name: threadKey,
 		},
-	})
+	};
+	return cardMessage
+}
+
+const webhook = async (cardMessage, thread = false, threadKey = '') => {
+	if (thread) {
+		var webhookUrl = 'https://chat.googleapis.com/v1/spaces/AAAAvn-fIfA/messages?threadKey=' + threadKey + '&messageReplyOption=REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD&key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=OTVxNSaIicNNq6rLpCnngdu8Yxa4DojUHiXGq4fqcs4';
+	} else {
+		var webhookUrl = 'https://chat.googleapis.com/v1/spaces/AAAAvn-fIfA/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=OTVxNSaIicNNq6rLpCnngdu8Yxa4DojUHiXGq4fqcs4';
+	}
+	const res = axios.post(webhookUrl, cardMessage)
+		.then(response => {
+			console.log('Card message sent');
+			// console.log(response)
+			return response
+		})
+		.catch(error => {
+			console.error('Error sending card message:', error);
+		});
+
+	return res
+}
+
+const messageBot = async msg => {
+
+	let getKey = await fetchAxios('http://170.249.211.82:12388/api/lcp/bot')
+	let data = getKey[0].data.thread
+	let thread = data
+
+	let messagesThread = await message(`Homedepot Batch ${process.env.BATCH}`, [
+		{
+			textParagraph: {
+				text: msg,
+			},
+		}
+	], thread)
+
+	await webhook(messagesThread, true, thread)
+
+
 }
 
 

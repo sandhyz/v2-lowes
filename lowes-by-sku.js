@@ -6,6 +6,7 @@ const cron = require('node-cron')
 const vpn = require('./vpn/vpn')
 const { parseString } = require('xml2js')
 const { Sequelize, DataTypes } = require('sequelize')
+require('dotenv').config();
 const {
     setupPuppeteer,
     setupSequalize,
@@ -224,7 +225,7 @@ let lcpLowes = async (payload, datas, loop, modelOnServer) => {
         await updateScrapeStatus({
             name: 'Lowes Per Sku',
             status: 'On Progress',
-            batch: 1,
+            batch: process.env.BATCH,
             Model: StatusModel,
             ModelBatched: StatusModelBatched
         })
@@ -411,7 +412,7 @@ let start = async () => {
         modelOnWebsite: modelOnWebsite,
         dbDatas: dbDatas,
         modelOnServer: modelOnServer,
-        batch: 0
+        batch: process.env.INDEX
     })
     console.log('total data : ' + datas.length)
 
@@ -426,12 +427,12 @@ let start = async () => {
         name: 'Lowes Per Sku',
         data: JSON.parse(await readData(`${__dirname}/lowes/data-by-sku.json`)),
         Model: LowesModel,
-        batch: 1,
+        batch: process.env.BATCH,
         StatusModel: StatusModel,
         StatusModelBatched: StatusModelBatched
     })
 
-    await messageBot('Lowes Already Done')
+    await messageBot('Successfully Scrape Data')
 }
 
 start()
