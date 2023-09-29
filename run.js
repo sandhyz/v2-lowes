@@ -42,7 +42,7 @@ let runReturn = async () => {
 let run = async () => {
     try{   
         const timeout = 10 * 60 * 1000
-        const ls = await spawn('node', ['/var/www/v2-lowes/lowes-by-sku.js'], { detached: true });
+        const ls = await spawn('node', ['/var/www/v2-lowes/lowes-by-sku.js', '-batch 1', '--index 0'], { detached: true });
         let timeoutId ;
         ls.stdout.on('data', (data) => {
             console.log(`stdout: ${data}`);
