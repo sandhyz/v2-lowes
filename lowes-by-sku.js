@@ -223,10 +223,12 @@ let lcpLowes = async (payload, datas, loop, modelOnServer) => {
             }))
         )
 
+        let batchArgs = args.batch
+
         await updateScrapeStatus({
             name: 'Lowes Per Sku',
             status: 'On Progress',
-            batch: args.batch,
+            batch: batchArgs,
             Model: StatusModel,
             ModelBatched: StatusModelBatched
         })
