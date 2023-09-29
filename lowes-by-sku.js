@@ -23,7 +23,7 @@ const {
     messageBot
 } = require('./helpers')
 const cheerio = require('cheerio')
-const args = require('minimist')(process.argv.slice(2))
+const argv = require('minimist')(process.argv.slice(2))
 
 const delay = (time) => {
     return new Promise((resolve) => {
@@ -223,12 +223,10 @@ let lcpLowes = async (payload, datas, loop, modelOnServer) => {
             }))
         )
 
-        let batchArgs = args.batch
-
         await updateScrapeStatus({
             name: 'Lowes Per Sku',
             status: 'On Progress',
-            batch: batchArgs,
+            batch: argv.batch,
             Model: StatusModel,
             ModelBatched: StatusModelBatched
         })
@@ -415,7 +413,7 @@ let start = async () => {
         modelOnWebsite: modelOnWebsite,
         dbDatas: dbDatas,
         modelOnServer: modelOnServer,
-        batch: args.index
+        batch: argv.index
     })
     console.log('total data : ' + datas.length)
 
@@ -430,7 +428,7 @@ let start = async () => {
         name: 'Lowes Per Sku',
         data: JSON.parse(await readData(`${__dirname}/lowes/data-by-sku.json`)),
         Model: LowesModel,
-        batch: args.batch,
+        batch: argv.batch,
         StatusModel: StatusModel,
         StatusModelBatched: StatusModelBatched
     })
