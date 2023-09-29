@@ -1,6 +1,6 @@
 const { spawn } = require('child_process');
 const {messageBot} = require('./helpers');
-
+require('dotenv').config();
 
 let runReturn = async () => {
     try{   
@@ -42,7 +42,7 @@ let runReturn = async () => {
 let run = async () => {
     try{   
         const timeout = 10 * 60 * 1000
-        const ls = await spawn('node', ['/var/www/v2-lowes/lowes-by-sku.js', '-batch 1', '--index 0'], { detached: true });
+        const ls = await spawn('node', ['/var/www/v2-lowes/lowes-by-sku.js', `--batch ${process.env.BATCH}`, `--index ${process.env.INDEX}`], { detached: true });
         let timeoutId ;
         ls.stdout.on('data', (data) => {
             console.log(`stdout: ${data}`);
