@@ -188,6 +188,7 @@ let getProduct = async datas => {
                 }
                 return result;
             }, []);
+            
             console.log(tempData.length)
             resolve(tempData)
         } catch (err) {
@@ -225,7 +226,7 @@ let lcpLowes = async (payload, datas, loop, modelOnServer) => {
         await updateScrapeStatus({
             name: 'Lowes Per Sku',
             status: 'On Progress',
-            batch: process.env.BATCH,
+            batch: args.batch,
             Model: StatusModel,
             ModelBatched: StatusModelBatched
         })
@@ -412,7 +413,7 @@ let start = async () => {
         modelOnWebsite: modelOnWebsite,
         dbDatas: dbDatas,
         modelOnServer: modelOnServer,
-        batch: process.env.INDEX
+        batch: args.index
     })
     console.log('total data : ' + datas.length)
 
@@ -427,7 +428,7 @@ let start = async () => {
         name: 'Lowes Per Sku',
         data: JSON.parse(await readData(`${__dirname}/lowes/data-by-sku.json`)),
         Model: LowesModel,
-        batch: process.env.BATCH,
+        batch: args.batch,
         StatusModel: StatusModel,
         StatusModelBatched: StatusModelBatched
     })
