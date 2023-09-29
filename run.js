@@ -5,7 +5,7 @@ const {messageBot} = require('./helpers');
 let runReturn = async () => {
     try{   
         const timeout = 10 * 60 * 1000
-        const ls = await spawn('node', ['/var/www/v2-lowes/return.js'], { detached: true, batch: 1 });
+        const ls = await spawn('node', ['--batch 1','/var/www/v2-lowes/return.js'], { detached: true });
         let timeoutId ;
         ls.stdout.on('data', (data) => {
             console.log(`stdout: ${data}`);
