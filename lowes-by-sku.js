@@ -399,41 +399,42 @@ let lcpLowes = async (payload, datas, loop, modelOnServer) => {
 }
 
 let start = async () => {
-    const modelWithPricetag = await fetchAxios('https://appliance-api.com/api/v2/product/bind/all?api_key=amtBMXRNelROclRWTWVNQWY3Sk5XRzFDTDJNZVBnclgxUXBmV3owWXduUmJld3J1bGhRcXN4WGFiQmRKMmNBMQ==')
-    const modelOnWebsite = await fetchAxios('https://appliance-api.com/api/v2/product/all?api_key=eGkrYXpZZzZSNkNrWjNuY0RxOGZqSitRKzU0UUhLTmdLZEt2ZUxsTlVSdlQrbStnMTgwSitpTjB2UWMyc2NRWQ==&type=data-feed&filter=settings')
-    const modelOnServer = await fetchAxios('http://170.249.211.82:12388/api/lcp/modelLowes')
-    const dbDatas = await DatasModel.findAll({
-        attributes: ['sku', 'original_sku'],
-        group: ['sku', 'original_sku'],
-        raw: true
-    }).then((data) => { return data })
+    console.log(args)
+    // const modelWithPricetag = await fetchAxios('https://appliance-api.com/api/v2/product/bind/all?api_key=amtBMXRNelROclRWTWVNQWY3Sk5XRzFDTDJNZVBnclgxUXBmV3owWXduUmJld3J1bGhRcXN4WGFiQmRKMmNBMQ==')
+    // const modelOnWebsite = await fetchAxios('https://appliance-api.com/api/v2/product/all?api_key=eGkrYXpZZzZSNkNrWjNuY0RxOGZqSitRKzU0UUhLTmdLZEt2ZUxsTlVSdlQrbStnMTgwSitpTjB2UWMyc2NRWQ==&type=data-feed&filter=settings')
+    // const modelOnServer = await fetchAxios('http://170.249.211.82:12388/api/lcp/modelLowes')
+    // const dbDatas = await DatasModel.findAll({
+    //     attributes: ['sku', 'original_sku'],
+    //     group: ['sku', 'original_sku'],
+    //     raw: true
+    // }).then((data) => { return data })
 
-    let datas = await getProduct({
-        modelWithPricetag: modelWithPricetag,
-        modelOnWebsite: modelOnWebsite,
-        dbDatas: dbDatas,
-        modelOnServer: modelOnServer,
-        batch: args.index
-    })
-    console.log('total data : ' + datas.length)
+    // let datas = await getProduct({
+    //     modelWithPricetag: modelWithPricetag,
+    //     modelOnWebsite: modelOnWebsite,
+    //     dbDatas: dbDatas,
+    //     modelOnServer: modelOnServer,
+    //     batch: args.index
+    // })
+    // console.log('total data : ' + datas.length)
 
-    await lcpLowes({
-        headless: true,
-        proxy: false,
-        os: 'linux',
-        autoRefetch: false
-    }, datas, 1, modelOnServer)
+    // await lcpLowes({
+    //     headless: true,
+    //     proxy: false,
+    //     os: 'linux',
+    //     autoRefetch: false
+    // }, datas, 1, modelOnServer)
 
-    await saveDataSKUBased({
-        name: 'Lowes Per Sku',
-        data: JSON.parse(await readData(`${__dirname}/lowes/data-by-sku.json`)),
-        Model: LowesModel,
-        batch: args.batch,
-        StatusModel: StatusModel,
-        StatusModelBatched: StatusModelBatched
-    })
+    // await saveDataSKUBased({
+    //     name: 'Lowes Per Sku',
+    //     data: JSON.parse(await readData(`${__dirname}/lowes/data-by-sku.json`)),
+    //     Model: LowesModel,
+    //     batch: args.batch,
+    //     StatusModel: StatusModel,
+    //     StatusModelBatched: StatusModelBatched
+    // })
 
-    await messageBot('Successfully Scrape Data')
+    // await messageBot('Successfully Scrape Data')
 }
 
 start()
