@@ -399,7 +399,7 @@ let lcpLowes = async (payload, datas, loop, modelOnServer) => {
 }
 
 let start = async () => {
-    console.log(args.batch)
+    console.log(args)
     // const modelWithPricetag = await fetchAxios('https://appliance-api.com/api/v2/product/bind/all?api_key=amtBMXRNelROclRWTWVNQWY3Sk5XRzFDTDJNZVBnclgxUXBmV3owWXduUmJld3J1bGhRcXN4WGFiQmRKMmNBMQ==')
     // const modelOnWebsite = await fetchAxios('https://appliance-api.com/api/v2/product/all?api_key=eGkrYXpZZzZSNkNrWjNuY0RxOGZqSitRKzU0UUhLTmdLZEt2ZUxsTlVSdlQrbStnMTgwSitpTjB2UWMyc2NRWQ==&type=data-feed&filter=settings')
     // const modelOnServer = await fetchAxios('http://170.249.211.82:12388/api/lcp/modelLowes')
