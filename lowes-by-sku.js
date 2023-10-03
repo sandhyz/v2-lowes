@@ -433,7 +433,7 @@ let start = async () => {
         StatusModelBatched: StatusModelBatched
     })
 
-    await messageBot('Successfully Scrape Data')
+    await messageBot('Successfully Scrape Data', argv.batch)
 }
 
 start()

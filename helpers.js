@@ -383,13 +383,13 @@ const webhook = async (cardMessage, thread = false, threadKey = '') => {
 	return res
 }
 
-const messageBot = async msg => {
+const messageBot = async (msg, batch) => {
 
 	let getKey = await fetchAxios('http://170.249.211.82:12388/api/lcp/bot')
 	let data = getKey[0].data.thread
 	let thread = data
 
-	let messagesThread = await message(`Lowes Batch ${process.env.BATCH}`, [
+	let messagesThread = await message(`Lowes Batch ${batch}`, [
 		{
 			textParagraph: {
 				text: msg,
