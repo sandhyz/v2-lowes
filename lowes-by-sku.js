@@ -260,11 +260,10 @@ let lcpLowes = async (payload, datas, loop, modelOnServer) => {
 
                     let fetchAPI = $('body').text()
                     fetchAPI = JSON.parse(fetchAPI)
-                    // console.log(JSON.parse(fetchAPI))
                     const parseDetail = fetchAPI.productDetails[modelId.itemId]
                     const dataLowes = parseDetail.product
                     const dataLowesPricing = parseDetail.mfePrice
-                    // console.log(dataLowesPricing)
+                    console.log(dataLowesPricing)
                     if (parseDetail) {
 
                         // status 
