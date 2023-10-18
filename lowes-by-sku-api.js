@@ -433,7 +433,7 @@ let start = async () => {
     })
 
     await messageBot('Successfully Scrape Data', argv.batch)
-    process.exit()
+    // process.exit()
 }
 
 start()
