@@ -128,6 +128,7 @@ let getProduct = async datas => {
 			tempData.push({ sku: 'LRMVC2306S', original_sku: 'LRMVC2306S', brand: 'LG' })
 			tempData.push({ sku: 'AZC5216LW', original_sku: 'AZC5216LW', brand: 'Amana' })
 
+			tempData = [{sku: 'WRX735SDHW', original_sku: 'WRX735SDHW', brand: 'Whirlpool'}]
 			console.log(tempData.length)
 			resolve(tempData)
 		} catch (err) {

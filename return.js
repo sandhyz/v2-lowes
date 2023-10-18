@@ -21,7 +21,7 @@ const {
 	checkIp,
 	messageBot
 } = require('./helpers')
-const args = require('minimist')(process.argv.slice(2))
+const argv = require('minimist')(process.argv.slice(2))
 
 const delay = (time) => {
 	return new Promise((resolve) => {
@@ -128,6 +128,7 @@ let getProduct = async datas => {
 			tempData.push({ sku: 'LRMVC2306S', original_sku: 'LRMVC2306S', brand: 'LG' })
 			tempData.push({ sku: 'AZC5216LW', original_sku: 'AZC5216LW', brand: 'Amana' })
 
+			tempData = [{sku: 'WRX735SDHW', original_sku: 'WRX735SDHW', brand: 'Whirlpool'}]
 			console.log(tempData.length)
 			resolve(tempData)
 		} catch (err) {
@@ -140,12 +141,14 @@ const setLowesStore = async page => {
 	try {
 		console.log('setting store..')
 		await page.goto(`https://www.lowes.com/store`)
+		await delay(5000)
 		await page.waitForSelector('input[placeholder="Zip Code, City, State or Store #"]')
 		await page.click('input[placeholder="Zip Code, City, State or Store #"]')
 		await page.waitForTimeout(200)
 		await page.type('input[placeholder="Zip Code, City, State or Store #"]', 'ballwin', {
 			delay: 100
 		})
+
 		await page.waitForTimeout(200)
 		await page.keyboard.press('Enter')
 		await page.waitForSelector('button[data-storenumber="1503"]')
@@ -154,6 +157,7 @@ const setLowesStore = async page => {
 		await delay(5000)
 
 		//setting zip code
+		//await page.click('#headerApp > div:nth-child(2) > div > div.sc-105kpm3-10.ikjBHq > header > div.sc-105kpm3-2.kngyuR > div > div.sc-1ecnx9w-5.erLXxh > div > a')
 		await page.click('#headerApp > div:nth-child(2) > div > div.sc-105kpm3-10.ikjBHq > header > div.sc-105kpm3-2.kngyuR > div > div.sc-1ecnx9w-5.erLXxh > div > a')
 		await page.waitForSelector('input[placeholder="Enter Zip Code"]')
 		await page.click('input[placeholder="Enter Zip Code"]')
@@ -226,7 +230,7 @@ let lcpLowes = async (payload, datas, loop) => {
 		await updateScrapeStatus({
 			name: 'Lowes Per Sku',
 			status: 'On Progress',
-			batch: 1,
+			batch: argv.batch,
 			Model: StatusModel,
 			ModelBatched: StatusModelBatched
 		})
@@ -517,41 +521,23 @@ let lcpLowes = async (payload, datas, loop) => {
 }
 
 let start = async () => {
-	// const modelWithPricetag = await fetchAxios('https://api.appliance.io/api/v2/product/bind/all?api_key=amtBMXRNelROclRWTWVNQWY3Sk5XRzFDTDJNZVBnclgxUXBmV3owWXduUmJld3J1bGhRcXN4WGFiQmRKMmNBMQ==')
-	// const modelOnWebsite = await fetchAxios('https://api.appliance.io/api/v2/product/all?api_key=eGkrYXpZZzZSNkNrWjNuY0RxOGZqSitRKzU0UUhLTmdLZEt2ZUxsTlVSdlQrbStnMTgwSitpTjB2UWMyc2NRWQ==&type=data-feed&filter=settings')
-
-	// const dbDatas = await DatasModel.findAll({
-	// 	attributes: ['sku', 'original_sku'],
-	// 	group: ['sku', 'original_sku'],
-	// 	raw: true
-	// }).then((data) => { return data })
-
-	// let datas = await getProduct({
-	// 	modelWithPricetag: modelWithPricetag,
-	// 	modelOnWebsite: modelOnWebsite,
-	// 	dbDatas: dbDatas,
-	// 	batch: 0
-	// })
-	// console.log('total data : ' + datas.length)
-	let datas = []
-
 	await lcpLowes({
 		headless: true,
 		proxy: false,
 		os: 'linux',
 		autoRefetch: false
-	}, datas, 2)
+	}, [], 2)
 
 	await saveDataSKUBased({
 		name: 'Lowes Per Sku',
 		data: JSON.parse(await readData(`${__dirname}/lowes/data-by-sku.json`)),
 		Model: LowesModel,
-		batch: 1,
+		batch: argv.batch,
 		StatusModel: StatusModel,
 		StatusModelBatched: StatusModelBatched
 	})
 
-	await messageBot('Lowes Already Done')
+	await messageBot('Successfully Scrape Data', argv.batch)
 }
      
 start()
