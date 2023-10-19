@@ -141,7 +141,7 @@ const setLowesStore = async page => {
 	try {
 		console.log('setting store..')
 		await page.goto(`https://www.lowes.com/store`)
-		await delay(5000)
+		await delay(10000)
 		await page.waitForSelector('input[placeholder="Zip Code, City, State or Store #"]')
 		await page.click('input[placeholder="Zip Code, City, State or Store #"]')
 		await page.waitForTimeout(200)
@@ -540,7 +540,7 @@ let start = async () => {
 	await lcpLowes({
 		headless: true,
 		proxy: false,
-		os: 'linux',
+		os: 'mac',
 		autoRefetch: false
 	}, datas, 1)
 
