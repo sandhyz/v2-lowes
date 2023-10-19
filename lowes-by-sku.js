@@ -540,7 +540,7 @@ let start = async () => {
 	await lcpLowes({
 		headless: true,
 		proxy: false,
-		os: 'mac',
+		os: 'linux',
 		autoRefetch: false
 	}, datas, 1)
 
