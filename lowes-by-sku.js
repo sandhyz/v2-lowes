@@ -289,13 +289,13 @@ let lcpLowes = async (payload, datas, loop) => {
 									await page.click('div.atc-buy-box > div > div > button')
 									await page.waitForSelector('div[data-selector="art-fl-totalPriceValue"]')
 									let cartPrice = await page.evaluate(() => document.querySelector('div[data-selector="art-fl-totalPriceValue"] > div > span').textContent)
-									data[idx].price = cartPrice != null && cartPrice != undefined ? parseInt(cartPrice.trim().replace('$', '').replace(/,/, '')) : 0
+									data[idx].price = cartPrice != null && cartPrice != undefined ? parseInt(cartPrice.trim().replace('$', '')) : 0
 								} else if (price.includes('Striked through price')) {
-									data[idx].price = parseInt(price.replace('Striked through price', '').trim().replace('$', '').replace(/,/, ''))
+									data[idx].price = parseInt(price.replace('Striked through price', '').trim().replace('$', ''))
 									data[idx].note = 'dashed price'
 									in_stock_status = 0
 								} else {
-									data[idx].price = parseInt(price.trim().replace('$', '').replace(/,/, ''))
+									data[idx].price = parseInt(price.trim().replace('$', ''))
 								}
 							} else {
 								data[idx].price = 0
@@ -378,13 +378,13 @@ let lcpLowes = async (payload, datas, loop) => {
 										await page.click('div.atc-buy-box > div > div > button')
 										await page.waitForSelector('div[data-selector="art-fl-totalPriceValue"]')
 										let cartPrice = await page.evaluate(() => document.querySelector('div[data-selector="art-fl-totalPriceValue"] > div > span').textContent)
-										data[idx].price = cartPrice != null && cartPrice != undefined ? parseInt(cartPrice.trim().replace('$', '').replace(/,/, '')) : 0
+										data[idx].price = cartPrice != null && cartPrice != undefined ? parseInt(cartPrice.trim().replace('$', '')) : 0
 									} else if (price.includes('Striked through price')) {
-										data[idx].price = parseInt(price.replace('Striked through price', '').trim().replace('$', '').replace(/,/, ''))
+										data[idx].price = parseInt(price.replace('Striked through price', '').trim().replace('$', ''))
 										data[idx].note = 'dashed price'
 										in_stock_status = 0
 									} else {
-										data[idx].price = parseInt(price.trim().replace('$', '').replace(/,/, ''))
+										data[idx].price = parseInt(price.trim().replace('$', ''))
 									}
 								} else {
 									data[idx].price = 0
