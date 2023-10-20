@@ -182,8 +182,8 @@ const saveDataSKUBased = async payload => {
 				sku: d.sku.replace(/[^a-zA-Z0-9]/g, ""),
 				brand: d.brand,
 				product_name: d.product_name,
-				price: d.price,
-				discount_price: d.price,
+				price: parseFloat(d.price.replace(/,/g, '')),
+				discount_price: parseFloat(d.price.replace(/,/g, '')),
 				in_stock_status: d.in_stock_status != undefined && d.in_stock_status != null?d.in_stock_status:0,
 				created_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss')
 			})
