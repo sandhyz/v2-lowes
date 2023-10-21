@@ -128,7 +128,6 @@ let getProduct = async datas => {
 			tempData.push({ sku: 'LRMVC2306S', original_sku: 'LRMVC2306S', brand: 'LG' })
 			tempData.push({ sku: 'AZC5216LW', original_sku: 'AZC5216LW', brand: 'Amana' })
 
-			tempData = [{sku: 'KUBL314KSS', original_sku: 'KUBL314KSS', brand: 'KitchenAid'}]
 			console.log(tempData.length)
 			resolve(tempData)
 		} catch (err) {
@@ -289,13 +288,13 @@ let lcpLowes = async (payload, datas, loop) => {
 									await page.click('div.atc-buy-box > div > div > button')
 									await page.waitForSelector('div[data-selector="art-fl-totalPriceValue"]')
 									let cartPrice = await page.evaluate(() => document.querySelector('div[data-selector="art-fl-totalPriceValue"] > div > span').textContent)
-									data[idx].price = cartPrice != null && cartPrice != undefined ? cartPrice.trim().replace('$', '') : 0
+									data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '').replace(/,/g, '')) : 0
 								} else if (price.includes('Striked through price')) {
-									data[idx].price = price.replace('Striked through price', '').trim().replace('$', '')
+									data[idx].price = parseFloat(price.replace('Striked through price', '').trim().replace('$', '').replace(/,/g, ''))
 									data[idx].note = 'dashed price'
 									in_stock_status = 0
 								} else {
-									data[idx].price = price.trim().replace('$', '')
+									data[idx].price = parseFloat(price.trim().replace('$', '').replace(/,/g, ''))
 								}
 							} else {
 								data[idx].price = 0
@@ -378,13 +377,13 @@ let lcpLowes = async (payload, datas, loop) => {
 										await page.click('div.atc-buy-box > div > div > button')
 										await page.waitForSelector('div[data-selector="art-fl-totalPriceValue"]')
 										let cartPrice = await page.evaluate(() => document.querySelector('div[data-selector="art-fl-totalPriceValue"] > div > span').textContent)
-										data[idx].price = cartPrice != null && cartPrice != undefined ? cartPrice.trim().replace('$', '') : 0
+										data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '').replace(/,/g, '')) : 0
 									} else if (price.includes('Striked through price')) {
-										data[idx].price = price.replace('Striked through price', '').trim().replace('$', '')
+										data[idx].price = parseFloat(price.replace('Striked through price', '').trim().replace('$', '').replace(/,/g, ''))
 										data[idx].note = 'dashed price'
 										in_stock_status = 0
 									} else {
-										data[idx].price = price.trim().replace('$', '')
+										data[idx].price = parseFloat(price.trim().replace('$', '').replace(/,/g, ''))
 									}
 								} else {
 									data[idx].price = 0
