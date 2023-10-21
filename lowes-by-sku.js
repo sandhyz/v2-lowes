@@ -240,6 +240,7 @@ let lcpLowes = async (payload, datas, loop) => {
 	for (const [idx, item] of data.entries()) {
 		if (!item.done) {
 			try {
+				await delay(2000)
 				console.log('search : ' + idx + ' - ' + item.sku + ' - ' + item.original_sku)
 
 				// if(proxy){
