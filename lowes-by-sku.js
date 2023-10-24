@@ -176,15 +176,15 @@ const setLowesStore = async page => {
 let lcpLowes = async (payload, datas, loop) => {
 	const { headless, proxy, os, autoRefetch } = payload
 	const args = [
-		// '--no-sandbox',
-		// '--disable-setuid-sandbox',
-		// // '--headless',
-		// '--disable-dev-shm-usage',
-		// '--disable-accelerated-2d-canvas',
-		// '--no-first-run',
-		// '--no-zygote',
-		// '--single-process', // <- this one doesn't works in Windows
-		// '--disable-gpu'
+		'--no-sandbox',
+		'--disable-setuid-sandbox',
+		// '--headless',
+		'--disable-dev-shm-usage',
+		'--disable-accelerated-2d-canvas',
+		'--no-first-run',
+		'--no-zygote',
+		'--single-process', // <- this one doesn't works in Windows
+		'--disable-gpu'
 	]
 
 	// if (proxy) args.push('--proxy-server=premium-residential.geonode.com:9000')
@@ -554,7 +554,7 @@ let start = async () => {
 		StatusModelBatched: StatusModelBatched
 	})
 
-	// await messageBot('Successfully Scrape Data', argv.batch)
+	await messageBot('Successfully Scrape Data', argv.batch)
 }
      
 start()
