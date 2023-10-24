@@ -140,7 +140,7 @@ const setLowesStore = async page => {
 	try {
 		console.log('setting store..')
 		await page.goto(`https://www.lowes.com/store`)
-		await delay(11000)
+		await delay(12000)
 		await page.waitForSelector('input[placeholder="Zip Code, City, State or Store #"]')
 		await page.click('input[placeholder="Zip Code, City, State or Store #"]')
 		await page.waitForTimeout(200)
@@ -166,7 +166,7 @@ const setLowesStore = async page => {
 		})
 		await page.keyboard.press('Enter')
 
-		await page.waitForTimeout(5000)
+		await page.waitForTimeout(6000)
 	} catch (err) {
 		console.log(err.message)
 		await setLowesStore(page)
@@ -438,6 +438,7 @@ let lcpLowes = async (payload, datas, loop) => {
 						let ip = await checkIp(1)
 						await delay(5000)
 					} else {
+						await setLowesStore(page)
 						data[idx].note = 'No result found.'
 						data[idx].done = true
 					}
