@@ -438,7 +438,6 @@ let lcpLowes = async (payload, datas, loop) => {
 						let ip = await checkIp(1)
 						await delay(5000)
 					} else {
-						await setLowesStore(page)
 						data[idx].note = 'No result found.'
 						data[idx].done = true
 					}
