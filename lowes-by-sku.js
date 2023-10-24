@@ -127,7 +127,7 @@ let getProduct = async datas => {
 			})
 			tempData.push({ sku: 'LRMVC2306S', original_sku: 'LRMVC2306S', brand: 'LG' })
 			tempData.push({ sku: 'AZC5216LW', original_sku: 'AZC5216LW', brand: 'Amana' })
-			// tempData = [{sku: 'GFT14ESSMWW', original_sku: 'GFT14ESSMWW', brand: 'GE'}]
+			// tempData = [{sku: 'GTE19JTNRBB', original_sku: 'GTE19JTNRBB', brand: 'GE'}]
 			console.log(tempData.length)
 			resolve(tempData)
 		} catch (err) {
@@ -176,15 +176,15 @@ const setLowesStore = async page => {
 let lcpLowes = async (payload, datas, loop) => {
 	const { headless, proxy, os, autoRefetch } = payload
 	const args = [
-		'--no-sandbox',
-		'--disable-setuid-sandbox',
-		// '--headless',
-		'--disable-dev-shm-usage',
-		'--disable-accelerated-2d-canvas',
-		'--no-first-run',
-		'--no-zygote',
-		'--single-process', // <- this one doesn't works in Windows
-		'--disable-gpu'
+		// '--no-sandbox',
+		// '--disable-setuid-sandbox',
+		// // '--headless',
+		// '--disable-dev-shm-usage',
+		// '--disable-accelerated-2d-canvas',
+		// '--no-first-run',
+		// '--no-zygote',
+		// '--single-process', // <- this one doesn't works in Windows
+		// '--disable-gpu'
 	]
 
 	// if (proxy) args.push('--proxy-server=premium-residential.geonode.com:9000')
@@ -290,13 +290,13 @@ let lcpLowes = async (payload, datas, loop) => {
 									await page.click('div.atc-buy-box > div > div > button')
 									await page.waitForSelector('div[data-selector="art-fl-totalPriceValue"]')
 									let cartPrice = await page.evaluate(() => document.querySelector('div[data-selector="art-fl-totalPriceValue"] > div > span').textContent)
-									data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '')) : 0
+									data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '').replace(/,/, '')) : 0
 								} else if (price.includes('Striked through price')) {
-									data[idx].price = parseFloat(price.replace('Striked through price', '').trim().replace('$', ''))
+									data[idx].price = parseFloat(price.replace('Striked through price', '').trim().replace('$', '').replace(/,/, ''))
 									data[idx].note = 'dashed price'
 									in_stock_status = 0
 								} else {
-									data[idx].price = parseFloat(price.trim().replace('$', ''))
+									data[idx].price = parseFloat(price.trim().replace('$', '').replace(/,/, ''))
 								}
 							} else {
 								data[idx].price = 0
@@ -379,13 +379,13 @@ let lcpLowes = async (payload, datas, loop) => {
 										await page.click('div.atc-buy-box > div > div > button')
 										await page.waitForSelector('div[data-selector="art-fl-totalPriceValue"]')
 										let cartPrice = await page.evaluate(() => document.querySelector('div[data-selector="art-fl-totalPriceValue"] > div > span').textContent)
-										data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '')) : 0
+										data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '').replace(/,/, '')) : 0
 									} else if (price.includes('Striked through price')) {
-										data[idx].price = parseFloat(price.replace('Striked through price', '').trim().replace('$', ''))
+										data[idx].price = parseFloat(price.replace('Striked through price', '').trim().replace('$', '').replace(/,/, ''))
 										data[idx].note = 'dashed price'
 										in_stock_status = 0
 									} else {
-										data[idx].price = parseFloat(price.trim().replace('$', ''))
+										data[idx].price = parseFloat(price.trim().replace('$', '').replace(/,/, ''))
 									}
 								} else {
 									data[idx].price = 0
@@ -541,7 +541,7 @@ let start = async () => {
 	await lcpLowes({
 		headless: true,
 		proxy: false,
-		os: 'linux',
+		os: 'mac',
 		autoRefetch: false
 	}, datas, 1)
 
