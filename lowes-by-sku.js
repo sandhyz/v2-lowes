@@ -127,7 +127,7 @@ let getProduct = async datas => {
 			})
 			tempData.push({ sku: 'LRMVC2306S', original_sku: 'LRMVC2306S', brand: 'LG' })
 			tempData.push({ sku: 'AZC5216LW', original_sku: 'AZC5216LW', brand: 'Amana' })
-
+			// tempData = [{sku: 'GFT14ESSMWW', original_sku: 'GFT14ESSMWW', brand: 'GE'}]
 			console.log(tempData.length)
 			resolve(tempData)
 		} catch (err) {
@@ -140,7 +140,7 @@ const setLowesStore = async page => {
 	try {
 		console.log('setting store..')
 		await page.goto(`https://www.lowes.com/store`)
-		await delay(12000)
+		await delay(10000)
 		await page.waitForSelector('input[placeholder="Zip Code, City, State or Store #"]')
 		await page.click('input[placeholder="Zip Code, City, State or Store #"]')
 		await page.waitForTimeout(200)
@@ -166,7 +166,7 @@ const setLowesStore = async page => {
 		})
 		await page.keyboard.press('Enter')
 
-		await page.waitForTimeout(6000)
+		await page.waitForTimeout(5000)
 	} catch (err) {
 		console.log(err.message)
 		await setLowesStore(page)
@@ -267,18 +267,19 @@ let lcpLowes = async (payload, datas, loop) => {
 				let h1 = await page.$('h1')
 				let checkh1 = await page.evaluate(el => el.textContent, h1)
 
-				let element = await page.$('#pdp-lpd')
-
+				let element = await page.$('div.item-model > p:nth-child(2)')
+				
 				if (element != null) {
-					let checkModel = await page.$('#pdp-lpd') != null ? await page.evaluate(() => document.querySelector('#pdp-lpd').innerHTML) : ''
+					let checkModel = await page.$('div.item-model > p:nth-child(2)') != null ? await page.evaluate(() => document.querySelector('div.item-model > p:nth-child(2)').innerHTML) : ''
 
 					if (checkModel.includes(item.sku.toUpperCase()) || checkModel.includes(item.original_sku)) {
+						
 						let elProduct = await page.$('div[data-type="PRODUCT"]')
 						let brand = await page.evaluate(el => el.getAttribute("data-brand"), elProduct)
 						let product_name = await page.evaluate(el => el.getAttribute("data-description"), elProduct)
 						let in_stock_status = 1
 
-						let elPrice = await page.$('.newPriceWrapper > div > div > span')
+						let elPrice = await page.$('div.main-price > span.item-price-dollar')
 						if (elPrice != undefined && elPrice != null) {
 							let price = await page.evaluate(el => el.textContent, elPrice)
 							if (price != '' && price != undefined && price != null) {
@@ -289,13 +290,13 @@ let lcpLowes = async (payload, datas, loop) => {
 									await page.click('div.atc-buy-box > div > div > button')
 									await page.waitForSelector('div[data-selector="art-fl-totalPriceValue"]')
 									let cartPrice = await page.evaluate(() => document.querySelector('div[data-selector="art-fl-totalPriceValue"] > div > span').textContent)
-									data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '').replace(/,/g, '')) : 0
+									data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '')) : 0
 								} else if (price.includes('Striked through price')) {
-									data[idx].price = parseFloat(price.replace('Striked through price', '').trim().replace('$', '').replace(/,/g, ''))
+									data[idx].price = parseFloat(price.replace('Striked through price', '').trim().replace('$', ''))
 									data[idx].note = 'dashed price'
 									in_stock_status = 0
 								} else {
-									data[idx].price = parseFloat(price.trim().replace('$', '').replace(/,/g, ''))
+									data[idx].price = parseFloat(price.trim().replace('$', ''))
 								}
 							} else {
 								data[idx].price = 0
@@ -339,7 +340,7 @@ let lcpLowes = async (payload, datas, loop) => {
 					await writeData(`${__dirname}/lowes/data-by-sku.json`, data)
 				} else {
 					const lists = await page.evaluate(() => {
-						const element = Array.from(document.querySelectorAll('#listItems'))
+						const element = Array.from(document.querySelectorAll('div[data-selector="prd-description-zone"]'))
 						return element.map(list => {
 							return list.innerHTML
 						});
@@ -358,16 +359,16 @@ let lcpLowes = async (payload, datas, loop) => {
 
 						await page.goto(`https://www.lowes.com${url}`, { timeout: 0 })
 						await page.waitForTimeout(3000)
-
-						let checkModel = await page.$('#pdp-lpd') != null ? await page.evaluate(() => document.querySelector('#pdp-lpd').innerHTML) : ''
-
+						console.log('gasken')
+						let checkModel = await page.$('div.item-model > p:nth-child(2)') != null ? await page.evaluate(() => document.querySelector('div.item-model > p:nth-child(2)').innerHTML) : ''
+							console.log(checkModel)
 						if (checkModel.includes(item.sku) || checkModel.includes(item.original_sku)) {
 							let elProduct = await page.$('div[data-type="PRODUCT"]')
 							let brand = await page.evaluate(el => el.getAttribute("data-brand"), elProduct)
 							let product_name = await page.evaluate(el => el.getAttribute("data-description"), elProduct)
 							let in_stock_status = 1
 
-							let elPrice = await page.$('.newPriceWrapper > div > div > span')
+							let elPrice = await page.$('div.main-price > span.item-price-dollar')
 							if (elPrice != undefined && elPrice != null) {
 								let price = await page.evaluate(el => el.textContent, elPrice)
 								if (price != '' && price != undefined && price != null) {
@@ -378,13 +379,13 @@ let lcpLowes = async (payload, datas, loop) => {
 										await page.click('div.atc-buy-box > div > div > button')
 										await page.waitForSelector('div[data-selector="art-fl-totalPriceValue"]')
 										let cartPrice = await page.evaluate(() => document.querySelector('div[data-selector="art-fl-totalPriceValue"] > div > span').textContent)
-										data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '').replace(/,/g, '')) : 0
+										data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '')) : 0
 									} else if (price.includes('Striked through price')) {
-										data[idx].price = parseFloat(price.replace('Striked through price', '').trim().replace('$', '').replace(/,/g, ''))
+										data[idx].price = parseFloat(price.replace('Striked through price', '').trim().replace('$', ''))
 										data[idx].note = 'dashed price'
 										in_stock_status = 0
 									} else {
-										data[idx].price = parseFloat(price.trim().replace('$', '').replace(/,/g, ''))
+										data[idx].price = parseFloat(price.trim().replace('$', ''))
 									}
 								} else {
 									data[idx].price = 0
@@ -553,7 +554,7 @@ let start = async () => {
 		StatusModelBatched: StatusModelBatched
 	})
 
-	await messageBot('Successfully Scrape Data', argv.batch)
+	// await messageBot('Successfully Scrape Data', argv.batch)
 }
      
 start()
