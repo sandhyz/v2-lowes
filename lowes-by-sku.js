@@ -127,7 +127,7 @@ let getProduct = async datas => {
 			})
 			tempData.push({ sku: 'LRMVC2306S', original_sku: 'LRMVC2306S', brand: 'LG' })
 			tempData.push({ sku: 'AZC5216LW', original_sku: 'AZC5216LW', brand: 'Amana' })
-			// tempData = [{sku: 'GTE19JTNRBB', original_sku: 'GTE19JTNRBB', brand: 'GE'}]
+			// tempData = [{sku: 'GFV55ESSNWW', original_sku: 'GFV55ESSNWW', brand: 'GE'}]
 			console.log(tempData.length)
 			resolve(tempData)
 		} catch (err) {
@@ -279,9 +279,10 @@ let lcpLowes = async (payload, datas, loop) => {
 						let product_name = await page.evaluate(el => el.getAttribute("data-description"), elProduct)
 						let in_stock_status = 1
 
-						let elPrice = await page.$('div.main-price > span.item-price-dollar')
+						let elPrice = await page.$('div.main-price')
 						if (elPrice != undefined && elPrice != null) {
 							let price = await page.evaluate(el => el.textContent, elPrice)
+							console.log(price)
 							if (price != '' && price != undefined && price != null) {
 								if (price.trim() == 'View Price In Cart') {
 									if (await page.$('div.mapEndDate > div > span > span[data-testid="savings-end-date"]') != null && await page.$('div.mapEndDate > div > span > span[data-testid="savings-end-date"]') != undefined) {
@@ -290,13 +291,15 @@ let lcpLowes = async (payload, datas, loop) => {
 									await page.click('div.atc-buy-box > div > div > button')
 									await page.waitForSelector('div[data-selector="art-fl-totalPriceValue"]')
 									let cartPrice = await page.evaluate(() => document.querySelector('div[data-selector="art-fl-totalPriceValue"] > div > span').textContent)
-									data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '').replace(/,/, '')) : 0
+									data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '').replace(',', '')).toFixed(2) : 0
 								} else if (price.includes('Striked through price')) {
-									data[idx].price = parseFloat(price.replace('Striked through price', '').trim().replace('$', '').replace(/,/, ''))
+									let priceF = price.replace('Striked through price', '').trim().replace('$', '').replace(',', '')
+									data[idx].price = parseFloat(priceF).toFixed(2)
 									data[idx].note = 'dashed price'
 									in_stock_status = 0
 								} else {
-									data[idx].price = parseFloat(price.trim().replace('$', '').replace(/,/, ''))
+									let priceF = price.trim().replace('$', '').replace(',', '')
+									data[idx].price = parseFloat(priceF).toFixed(2)
 								}
 							} else {
 								data[idx].price = 0
@@ -359,16 +362,14 @@ let lcpLowes = async (payload, datas, loop) => {
 
 						await page.goto(`https://www.lowes.com${url}`, { timeout: 0 })
 						await page.waitForTimeout(3000)
-						console.log('gasken')
 						let checkModel = await page.$('div.item-model > p:nth-child(2)') != null ? await page.evaluate(() => document.querySelector('div.item-model > p:nth-child(2)').innerHTML) : ''
-							console.log(checkModel)
 						if (checkModel.includes(item.sku) || checkModel.includes(item.original_sku)) {
 							let elProduct = await page.$('div[data-type="PRODUCT"]')
 							let brand = await page.evaluate(el => el.getAttribute("data-brand"), elProduct)
 							let product_name = await page.evaluate(el => el.getAttribute("data-description"), elProduct)
 							let in_stock_status = 1
 
-							let elPrice = await page.$('div.main-price > span.item-price-dollar')
+							let elPrice = await page.$('div.main-price')
 							if (elPrice != undefined && elPrice != null) {
 								let price = await page.evaluate(el => el.textContent, elPrice)
 								if (price != '' && price != undefined && price != null) {
@@ -379,13 +380,15 @@ let lcpLowes = async (payload, datas, loop) => {
 										await page.click('div.atc-buy-box > div > div > button')
 										await page.waitForSelector('div[data-selector="art-fl-totalPriceValue"]')
 										let cartPrice = await page.evaluate(() => document.querySelector('div[data-selector="art-fl-totalPriceValue"] > div > span').textContent)
-										data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '').replace(/,/, '')) : 0
+										data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '').replace(',', '')).toFixed(2) : 0
 									} else if (price.includes('Striked through price')) {
-										data[idx].price = parseFloat(price.replace('Striked through price', '').trim().replace('$', '').replace(/,/, ''))
+										let priceF = price.replace('Striked through price', '').trim().replace('$', '').replace(',', '')
+										data[idx].price = parseFloat(priceF).toFixed(2)
 										data[idx].note = 'dashed price'
 										in_stock_status = 0
 									} else {
-										data[idx].price = parseFloat(price.trim().replace('$', '').replace(/,/, ''))
+										let priceF = price.trim().replace('$', '').replace(',', '')
+										data[idx].price =  parseFloat(priceF).toFixed(2)
 									}
 								} else {
 									data[idx].price = 0
