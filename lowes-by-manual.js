@@ -204,32 +204,13 @@ let lcpLowes = async (payload, datas, loop) => {
 					: 'C:/Users/Aditya Wisnu/.cache/puppeteer/chrome/win64-1069273/chrome-win/chrome.exe'
 	})
 
-	if (loop === 1) {
-		if (await fs.existsSync(`${__dirname}/lowes/data-by-sku.json`))
-			await deleteData(`${__dirname}/lowes/data-by-sku.json`)
-
-		// if(proxy){
-		//     await page.authenticate({
-		//         username: 'geonode_H2GkecyuP0-country-US',
-		//         password: 'ddb75f1c-5598-4c0d-adc5-39c95676f0bd'
-		//     })
-		// }
-
-		await writeData(
-			`${__dirname}/lowes/data-by-sku.json`,
-			datas.map(sku => ({
-				sku: sku.sku,
-				original_sku: sku.original_sku
-			}))
-		)
-	}
 
 	await setLowesStore(page)
-	if (loop === 1) {
+	if (loop === 2) {
 		await updateScrapeStatus({
-			name: 'Lowes Per Sku',
+			name: 'LCP Manual',
 			status: 'On Progress',
-			batch: argv.batch,
+			batch: 1,
 			Model: StatusModel,
 			ModelBatched: StatusModelBatched
 		})
@@ -533,10 +514,10 @@ let start = async () => {
 	}, [], 2)
 
 	await saveDataSKUBased({
-		name: 'Lowes Per Sku',
+		name: 'LCP Manual',
 		data: JSON.parse(await readData(`${__dirname}/lowes/data-by-sku.json`)),
 		Model: LowesModel,
-		batch: null,
+		batch: 1,
 		StatusModel: StatusModel,
 		StatusModelBatched: StatusModelBatched
 	})
