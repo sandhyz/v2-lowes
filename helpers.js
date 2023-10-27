@@ -166,7 +166,7 @@ const saveScrapeData = async payload => {
 		status: 'Success',
 		Model: StatusModel,
 	})
-	
+
 
 	console.log(`---Saving Completed ${name}---`)
 }
@@ -177,19 +177,19 @@ const saveDataSKUBased = async payload => {
 	console.log(`---Start Saving ${name}---`)
 	let new_data = []
 	data.map((d) => {
-		if(d.price != undefined && (d.note == undefined || d.note == 'dashed price')){
+		if (d.price != undefined && (d.note == undefined || d.note == 'dashed price')) {
 			new_data.push({
 				sku: d.sku.replace(/[^a-zA-Z0-9]/g, ""),
 				brand: d.brand,
 				product_name: d.product_name,
 				price: d.price,
 				discount_price: d.price,
-				in_stock_status: d.in_stock_status != undefined && d.in_stock_status != null?d.in_stock_status:0,
+				in_stock_status: d.in_stock_status != undefined && d.in_stock_status != null ? d.in_stock_status : 0,
 				created_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss')
 			})
 		}
 	})
-	
+
 	await saveScrape({ data: new_data, Model })
 	await updateScrapeStatus({
 		name: name,
@@ -198,7 +198,7 @@ const saveDataSKUBased = async payload => {
 		Model: StatusModel,
 		ModelBatched: StatusModelBatched,
 	})
-	
+
 
 	console.log(`---Saving Completed ${name}---`)
 }
@@ -206,14 +206,14 @@ const saveDataSKUBased = async payload => {
 const updateSuccessStatus = async payload => {
 	const { scraping_id, Model, ModelBatched } = payload
 
-	try{
+	try {
 		await ModelBatched.findAll({
 			where: {
 				scraping_id,
 				status: 'On Progress'
 			}
 		}).then(async function (btc) {
-			if(btc.length == 0){
+			if (btc.length == 0) {
 				return await Model.update({
 					status: 'Success',
 					updated_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss')
@@ -226,7 +226,7 @@ const updateSuccessStatus = async payload => {
 
 			return true;
 		})
-	} catch(err) {
+	} catch (err) {
 		console.log(err)
 	}
 }
@@ -235,59 +235,61 @@ const updateScrapeStatus = async payload => {
 	const { name, status, batch, Model, ModelBatched } = payload
 
 	try {
-		await Model.findOne({
-			where: {
-				name
-			}
-		}).then(async function (obj) {
-			if (obj){
-				if(status == 'On Progress')
-					await obj.update({status, updated_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss')})
+		if (batch) {
+			await Model.findOne({
+				where: {
+					name
+				}
+			}).then(async function (obj) {
+				if (obj) {
+					if (status == 'On Progress')
+						await obj.update({ status, updated_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss') })
 
-				await ModelBatched.findOne({
-					where: {
-						scraping_id: obj.id,
-						batch: batch
-					}
-				}).then(async function (st) {
-					if(st){
-						await st.update({
+					await ModelBatched.findOne({
+						where: {
+							scraping_id: obj.id,
+							batch: batch
+						}
+					}).then(async function (st) {
+						if (st) {
+							await st.update({
+								status,
+								updated_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss')
+							})
+							await updateSuccessStatus({ scraping_id: obj.id, Model, ModelBatched })
+							return obj;
+						}
+
+						await ModelBatched.create({
+							scraping_id: obj.id,
+							batch,
 							status,
+							created_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss'),
 							updated_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss')
 						})
 						await updateSuccessStatus({ scraping_id: obj.id, Model, ModelBatched })
-						return obj;
-					}
-
-					await ModelBatched.create({
-						scraping_id: obj.id,
-						batch,
-						status,
-						created_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss'),
-						updated_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss')
 					})
-					await updateSuccessStatus({ scraping_id: obj.id, Model, ModelBatched })
+					return obj;
+				}
+
+				let scraping = await Model.create({
+					status,
+					name,
+					brand_slug: name,
+					created_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss'),
+					updated_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss')
+				}).then((data) => { return data })
+				await ModelBatched.create({
+					scraping_id: scraping.id,
+					batch,
+					status,
+					created_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss'),
+					updated_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss')
 				})
-				return obj;
-			}
-			
-			let scraping = await Model.create({
-				status,
-				name,
-				brand_slug: name,
-				created_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss'),
-				updated_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss')
-			}).then((data) => {return data})
-			await ModelBatched.create({
-				scraping_id: scraping.id,
-				batch,
-				status,
-				created_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss'),
-				updated_at: moment.tz(new Date(), 'America/Chicago').format('YYYY-MM-DD HH:mm:ss')
+				await updateSuccessStatus({ scraping_id: scraping.id, Model, ModelBatched })
+				return scraping;
 			})
-			await updateSuccessStatus({ scraping_id: scraping.id, Model, ModelBatched })
-			return scraping;
-		})
+		}
 	} catch (err) {
 		console.log(err)
 	}
@@ -302,17 +304,17 @@ const pageRecreate = async (page, browser) => {
 }
 
 const fetchAxios = async url => {
-	try{
+	try {
 		const { data } = await axios.get(url);
-		if(data){
-			console.log('request success to : '+url)
+		if (data) {
+			console.log('request success to : ' + url)
 			return data;
 		}
-		console.log('request failed to : '+url)
+		console.log('request failed to : ' + url)
 		return [''];
-	} catch(err) {
-		console.log('request failed to : '+url)
-		console.log('ERROR : '+err.message)
+	} catch (err) {
+		console.log('request failed to : ' + url)
+		console.log('ERROR : ' + err.message)
 		return [''];
 	}
 }
@@ -320,22 +322,22 @@ const fetchAxios = async url => {
 const checkIp = async loop => {
 	return new Promise(async (resolve, reject) => {
 		let current_ip = ''
-		try{
+		try {
 			let ip = await fetchAxios('https://ipinfo.io/ip')
 			console.log(`IP : ${ip}`)
 
-			if(ip.includes("170.249.211.82")){
-				if(loop <= 5){
+			if (ip.includes("170.249.211.82")) {
+				if (loop <= 5) {
 					await delay(60000)
 					loop++
 					current_ip = await checkIp(loop)
-				}else{
+				} else {
 					resolve(false)
 				}
-			}else{
+			} else {
 				current_ip = ip
 			}
-		} catch(err) {
+		} catch (err) {
 			console.log(err)
 		}
 
