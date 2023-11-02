@@ -88,17 +88,17 @@ const LiveDatasModel = Sequelize2.define('v4_product_data', {
 let getProduct = async datas => {
 	return new Promise(async (resolve, reject) => {
 		try {
-			let { modelWithPricetag, modelOnWebsite, dbDatas, batch } = datas
-			let rawdata = modelWithPricetag
+			let { modelWithPricetag, modelOnWebsite, batch } = datas
+			let rawdata = modelOnWebsite
 
 			console.log('model with pricetag : ' + rawdata.length)
 			console.log('model on website : ' + modelOnWebsite.length)
-			modelOnWebsite.map((model, m) => {
+			modelWithPricetag.map((model, m) => {
 				let searchModel = rawdata.findIndex(s => s.sku === model.product_id)
 				if (searchModel == -1) {
 					rawdata.push({
 						sku: model.product_id,
-						brand_name: model.brand
+						brand: model.brand
 					})
 				}
 			})
@@ -106,27 +106,26 @@ let getProduct = async datas => {
 			let perData = Math.ceil(rawdata.length / 5)
 			let from = Math.ceil(perData * batch)
 			let to = Math.ceil(perData + from)
+			let tempData = rawdata.slice(from, to)
 
-			let dataPerPart = rawdata.slice(from, to)
-
-			let tempData = dataPerPart.map((data) => {
-				let searchModel = dbDatas.findIndex(s => s.sku === data.sku);
-				if (searchModel != -1) {
-					return {
-						sku: data.sku,
-						original_sku: dbDatas[searchModel].original_sku != null ? dbDatas[searchModel].original_sku : data.sku,
-						brand: data.brand_name
-					}
-				} else {
-					return {
-						sku: data.sku,
-						original_sku: data.sku,
-						brand: data.brand_name
-					}
-				}
-			})
-			tempData.push({ sku: 'LRMVC2306S', original_sku: 'LRMVC2306S', brand: 'LG' })
-			tempData.push({ sku: 'AZC5216LW', original_sku: 'AZC5216LW', brand: 'Amana' })
+			// let tempData = dataPerPart.map((data) => {
+			// 	let searchModel = dbDatas.findIndex(s => s.sku === data.sku);
+			// 	if (searchModel != -1) {
+			// 		return {
+			// 			sku: data.sku,
+			// 			original_sku: dbDatas[searchModel].original_sku != null ? dbDatas[searchModel].original_sku : data.sku,
+			// 			brand: data.brand_name
+			// 		}
+			// 	} else {
+			// 		return {
+			// 			sku: data.sku,
+			// 			original_sku: data.sku,
+			// 			brand: data.brand_name
+			// 		}
+			// 	}
+			// })
+			// tempData.push({ sku: 'LRMVC2306S', original_sku: 'LRMVC2306S', brand: 'LG' })
+			// tempData.push({ sku: 'AZC5216LW', original_sku: 'AZC5216LW', brand: 'Amana' })
 			// tempData = [{sku: 'KCGC558JSS', original_sku: 'KCGC558JSS', brand: 'KitchenAid'}]
 			console.log(tempData.length)
 			resolve(tempData)
@@ -526,37 +525,32 @@ let lcpLowes = async (payload, datas, loop) => {
 let start = async () => {
     const modelWithPricetag = await fetchAxios('https://appliance-api.com/api/v2/product/bind/all?api_key=amtBMXRNelROclRWTWVNQWY3Sk5XRzFDTDJNZVBnclgxUXBmV3owWXduUmJld3J1bGhRcXN4WGFiQmRKMmNBMQ==')
     const modelOnWebsite = await fetchAxios('https://appliance-api.com/api/v2/product/all?api_key=eGkrYXpZZzZSNkNrWjNuY0RxOGZqSitRKzU0UUhLTmdLZEt2ZUxsTlVSdlQrbStnMTgwSitpTjB2UWMyc2NRWQ==&type=data-feed&filter=settings')
-	const dbDatas = await DatasModel.findAll({
-		attributes: ['sku', 'original_sku'],
-		group: ['sku', 'original_sku'],
-		raw: true
-	}).then((data) => { return data })
 
 	let datas = await getProduct({
 		modelWithPricetag: modelWithPricetag,
 		modelOnWebsite: modelOnWebsite,
-		dbDatas: dbDatas,
-		batch: argv.index
+		batch: argv.batch - 1
 	})
+
 	console.log('total data : ' + datas.length)
 
-	await lcpLowes({
-		headless: true,
-		proxy: false,
-		os: 'linux',
-		autoRefetch: false
-	}, datas, 1)
+	// await lcpLowes({
+	// 	headless: true,
+	// 	proxy: false,
+	// 	os: 'linux',
+	// 	autoRefetch: false
+	// }, datas, 1)
 
-	await saveDataSKUBased({
-		name: 'Lowes Per Sku',
-		data: JSON.parse(await readData(`${__dirname}/lowes/data-by-sku.json`)),
-		Model: LowesModel,
-		batch: argv.batch,
-		StatusModel: StatusModel,
-		StatusModelBatched: StatusModelBatched
-	})
+	// await saveDataSKUBased({
+	// 	name: 'Lowes Per Sku',
+	// 	data: JSON.parse(await readData(`${__dirname}/lowes/data-by-sku.json`)),
+	// 	Model: LowesModel,
+	// 	batch: argv.batch,
+	// 	StatusModel: StatusModel,
+	// 	StatusModelBatched: StatusModelBatched
+	// })
 
-	await messageBot('Successfully Scrape Data', argv.batch)
+	// await messageBot('Successfully Scrape Data', argv.batch)
 }
      
 start()
