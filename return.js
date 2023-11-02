@@ -88,17 +88,17 @@ const LiveDatasModel = Sequelize2.define('v4_product_data', {
 let getProduct = async datas => {
 	return new Promise(async (resolve, reject) => {
 		try {
-			let { modelWithPricetag, modelOnWebsite, dbDatas, batch } = datas
-			let rawdata = modelWithPricetag
+			let { modelWithPricetag, modelOnWebsite, batch } = datas
+			let rawdata = modelOnWebsite
 
 			console.log('model with pricetag : ' + rawdata.length)
 			console.log('model on website : ' + modelOnWebsite.length)
-			modelOnWebsite.map((model, m) => {
+			modelWithPricetag.map((model, m) => {
 				let searchModel = rawdata.findIndex(s => s.sku === model.product_id)
 				if (searchModel == -1) {
 					rawdata.push({
 						sku: model.product_id,
-						brand_name: model.brand
+						brand: model.brand
 					})
 				}
 			})
@@ -106,29 +106,27 @@ let getProduct = async datas => {
 			let perData = Math.ceil(rawdata.length / 5)
 			let from = Math.ceil(perData * batch)
 			let to = Math.ceil(perData + from)
+			let tempData = rawdata.slice(from, to)
 
-			let dataPerPart = rawdata.slice(from, to)
-
-			let tempData = dataPerPart.map((data) => {
-				let searchModel = dbDatas.findIndex(s => s.sku === data.sku);
-				if (searchModel != -1) {
-					return {
-						sku: data.sku,
-						original_sku: dbDatas[searchModel].original_sku != null ? dbDatas[searchModel].original_sku : data.sku,
-						brand: data.brand_name
-					}
-				} else {
-					return {
-						sku: data.sku,
-						original_sku: data.sku,
-						brand: data.brand_name
-					}
-				}
-			})
-			tempData.push({ sku: 'LRMVC2306S', original_sku: 'LRMVC2306S', brand: 'LG' })
-			tempData.push({ sku: 'AZC5216LW', original_sku: 'AZC5216LW', brand: 'Amana' })
-
-			tempData = [{sku: 'WRX735SDHW', original_sku: 'WRX735SDHW', brand: 'Whirlpool'}]
+			// let tempData = dataPerPart.map((data) => {
+			// 	let searchModel = dbDatas.findIndex(s => s.sku === data.sku);
+			// 	if (searchModel != -1) {
+			// 		return {
+			// 			sku: data.sku,
+			// 			original_sku: dbDatas[searchModel].original_sku != null ? dbDatas[searchModel].original_sku : data.sku,
+			// 			brand: data.brand_name
+			// 		}
+			// 	} else {
+			// 		return {
+			// 			sku: data.sku,
+			// 			original_sku: data.sku,
+			// 			brand: data.brand_name
+			// 		}
+			// 	}
+			// })
+			// tempData.push({ sku: 'LRMVC2306S', original_sku: 'LRMVC2306S', brand: 'LG' })
+			// tempData.push({ sku: 'AZC5216LW', original_sku: 'AZC5216LW', brand: 'Amana' })
+			// tempData = [{sku: 'KCGC558JSS', original_sku: 'KCGC558JSS', brand: 'KitchenAid'}]
 			console.log(tempData.length)
 			resolve(tempData)
 		} catch (err) {
@@ -141,7 +139,7 @@ const setLowesStore = async page => {
 	try {
 		console.log('setting store..')
 		await page.goto(`https://www.lowes.com/store`)
-		await delay(5000)
+		await delay(9000)
 		await page.waitForSelector('input[placeholder="Zip Code, City, State or Store #"]')
 		await page.click('input[placeholder="Zip Code, City, State or Store #"]')
 		await page.waitForTimeout(200)
@@ -241,6 +239,7 @@ let lcpLowes = async (payload, datas, loop) => {
 	for (const [idx, item] of data.entries()) {
 		if (!item.done) {
 			try {
+				// await delay(2000)
 				console.log('search : ' + idx + ' - ' + item.sku + ' - ' + item.original_sku)
 
 				// if(proxy){
@@ -267,18 +266,19 @@ let lcpLowes = async (payload, datas, loop) => {
 				let h1 = await page.$('h1')
 				let checkh1 = await page.evaluate(el => el.textContent, h1)
 
-				let element = await page.$('#pdp-lpd')
-
+				let element = await page.$('div.item-model > p:nth-child(2)')
+				
 				if (element != null) {
-					let checkModel = await page.$('#pdp-lpd') != null ? await page.evaluate(() => document.querySelector('#pdp-lpd').innerHTML) : ''
+					let checkModel = await page.$('div.item-model > p:nth-child(2)') != null ? await page.evaluate(() => document.querySelector('div.item-model > p:nth-child(2)').innerHTML) : ''
 
 					if (checkModel.includes(item.sku.toUpperCase()) || checkModel.includes(item.original_sku)) {
+						
 						let elProduct = await page.$('div[data-type="PRODUCT"]')
 						let brand = await page.evaluate(el => el.getAttribute("data-brand"), elProduct)
 						let product_name = await page.evaluate(el => el.getAttribute("data-description"), elProduct)
 						let in_stock_status = 1
 
-						let elPrice = await page.$('.newPriceWrapper > div > div > span')
+						let elPrice = await page.$('div.PriceUIstyles__WrapperComponentInner-sc-14j12uk-1.fFMWYd > span')
 						if (elPrice != undefined && elPrice != null) {
 							let price = await page.evaluate(el => el.textContent, elPrice)
 							if (price != '' && price != undefined && price != null) {
@@ -289,13 +289,15 @@ let lcpLowes = async (payload, datas, loop) => {
 									await page.click('div.atc-buy-box > div > div > button')
 									await page.waitForSelector('div[data-selector="art-fl-totalPriceValue"]')
 									let cartPrice = await page.evaluate(() => document.querySelector('div[data-selector="art-fl-totalPriceValue"] > div > span').textContent)
-									data[idx].price = cartPrice != null && cartPrice != undefined ? parseInt(cartPrice.trim().replace('$', '').replace(/,/, '')) : 0
+									data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '').replace(',', '')).toFixed(2) : 0
 								} else if (price.includes('Striked through price')) {
-									data[idx].price = parseInt(price.replace('Striked through price', '').trim().replace('$', '').replace(/,/, ''))
+									let priceF = price.replace('Striked through price', '').trim().replace('$', '').replace(',', '')
+									data[idx].price = parseFloat(priceF).toFixed(2)
 									data[idx].note = 'dashed price'
 									in_stock_status = 0
 								} else {
-									data[idx].price = parseInt(price.trim().replace('$', '').replace(/,/, ''))
+									let priceF = price.trim().replace('$', '').replace(',', '')
+									data[idx].price = parseFloat(priceF).toFixed(2)
 								}
 							} else {
 								data[idx].price = 0
@@ -358,16 +360,14 @@ let lcpLowes = async (payload, datas, loop) => {
 
 						await page.goto(`https://www.lowes.com${url}`, { timeout: 0 })
 						await page.waitForTimeout(3000)
-
-						let checkModel = await page.$('#pdp-lpd') != null ? await page.evaluate(() => document.querySelector('#pdp-lpd').innerHTML) : ''
-
+						let checkModel = await page.$('div.item-model > p:nth-child(2)') != null ? await page.evaluate(() => document.querySelector('div.item-model > p:nth-child(2)').innerHTML) : ''
 						if (checkModel.includes(item.sku) || checkModel.includes(item.original_sku)) {
 							let elProduct = await page.$('div[data-type="PRODUCT"]')
 							let brand = await page.evaluate(el => el.getAttribute("data-brand"), elProduct)
 							let product_name = await page.evaluate(el => el.getAttribute("data-description"), elProduct)
 							let in_stock_status = 1
 
-							let elPrice = await page.$('.newPriceWrapper > div > div > span')
+							let elPrice = await page.$('div.PriceUIstyles__WrapperComponentInner-sc-14j12uk-1.fFMWYd > span')
 							if (elPrice != undefined && elPrice != null) {
 								let price = await page.evaluate(el => el.textContent, elPrice)
 								if (price != '' && price != undefined && price != null) {
@@ -378,13 +378,15 @@ let lcpLowes = async (payload, datas, loop) => {
 										await page.click('div.atc-buy-box > div > div > button')
 										await page.waitForSelector('div[data-selector="art-fl-totalPriceValue"]')
 										let cartPrice = await page.evaluate(() => document.querySelector('div[data-selector="art-fl-totalPriceValue"] > div > span').textContent)
-										data[idx].price = cartPrice != null && cartPrice != undefined ? parseInt(cartPrice.trim().replace('$', '').replace(/,/, '')) : 0
+										data[idx].price = cartPrice != null && cartPrice != undefined ? parseFloat(cartPrice.trim().replace('$', '').replace(',', '')).toFixed(2) : 0
 									} else if (price.includes('Striked through price')) {
-										data[idx].price = parseInt(price.replace('Striked through price', '').trim().replace('$', '').replace(/,/, ''))
+										let priceF = price.replace('Striked through price', '').trim().replace('$', '').replace(',', '')
+										data[idx].price = parseFloat(priceF).toFixed(2)
 										data[idx].note = 'dashed price'
 										in_stock_status = 0
 									} else {
-										data[idx].price = parseInt(price.trim().replace('$', '').replace(/,/, ''))
+										let priceF = price.trim().replace('$', '').replace(',', '')
+										data[idx].price =  parseFloat(priceF).toFixed(2)
 									}
 								} else {
 									data[idx].price = 0
@@ -434,7 +436,7 @@ let lcpLowes = async (payload, datas, loop) => {
 						await delay(60000)
 						console.log('Start VPN')
 						await vpn.start()
-						await delay(600000)
+						await delay(180000)
 						let ip = await checkIp(1)
 						await delay(5000)
 					} else {
@@ -521,12 +523,15 @@ let lcpLowes = async (payload, datas, loop) => {
 }
 
 let start = async () => {
+
+	let datas = []
+
 	await lcpLowes({
 		headless: true,
 		proxy: false,
 		os: 'linux',
 		autoRefetch: false
-	}, [], 2)
+	}, datas, 2)
 
 	await saveDataSKUBased({
 		name: 'Lowes Per Sku',

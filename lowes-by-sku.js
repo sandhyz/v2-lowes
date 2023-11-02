@@ -534,12 +534,12 @@ let start = async () => {
 
 	console.log('total data : ' + datas.length)
 
-	// await lcpLowes({
-	// 	headless: true,
-	// 	proxy: false,
-	// 	os: 'linux',
-	// 	autoRefetch: false
-	// }, datas, 1)
+	await lcpLowes({
+		headless: true,
+		proxy: false,
+		os: 'linux',
+		autoRefetch: false
+	}, datas, 1)
 
 	// await saveDataSKUBased({
 	// 	name: 'Lowes Per Sku',
