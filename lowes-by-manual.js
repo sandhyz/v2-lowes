@@ -260,7 +260,7 @@ let lcpLowes = async (payload, datas, loop) => {
 						let product_name = await page.evaluate(el => el.getAttribute("data-description"), elProduct)
 						let in_stock_status = 1
 
-						let elPrice = await page.$('div.main-price')
+						let elPrice = await page.$('div.PriceUIstyles__WrapperComponentInner-sc-14j12uk-1.fFMWYd > span')
 						if (elPrice != undefined && elPrice != null) {
 							let price = await page.evaluate(el => el.textContent, elPrice)
 							console.log(price)
@@ -350,7 +350,7 @@ let lcpLowes = async (payload, datas, loop) => {
 							let product_name = await page.evaluate(el => el.getAttribute("data-description"), elProduct)
 							let in_stock_status = 1
 
-							let elPrice = await page.$('div.main-price')
+							let elPrice = await page.$('div.PriceUIstyles__WrapperComponentInner-sc-14j12uk-1.fFMWYd > span')
 							if (elPrice != undefined && elPrice != null) {
 								let price = await page.evaluate(el => el.textContent, elPrice)
 								if (price != '' && price != undefined && price != null) {
@@ -522,7 +522,7 @@ let start = async () => {
 		StatusModelBatched: StatusModelBatched
 	})
 
-	await messageBot('Successfully Scrape Manual Data', 6)
+	await messageBot('Successfully Scrape Manual Data', 1)
 }
      
 start()

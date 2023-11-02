@@ -127,7 +127,7 @@ let getProduct = async datas => {
 			})
 			tempData.push({ sku: 'LRMVC2306S', original_sku: 'LRMVC2306S', brand: 'LG' })
 			tempData.push({ sku: 'AZC5216LW', original_sku: 'AZC5216LW', brand: 'Amana' })
-			// tempData = [{sku: 'GFV55ESSNWW', original_sku: 'GFV55ESSNWW', brand: 'GE'}]
+			// tempData = [{sku: 'KCGC558JSS', original_sku: 'KCGC558JSS', brand: 'KitchenAid'}]
 			console.log(tempData.length)
 			resolve(tempData)
 		} catch (err) {
@@ -279,10 +279,9 @@ let lcpLowes = async (payload, datas, loop) => {
 						let product_name = await page.evaluate(el => el.getAttribute("data-description"), elProduct)
 						let in_stock_status = 1
 
-						let elPrice = await page.$('div.main-price')
+						let elPrice = await page.$('div.PriceUIstyles__WrapperComponentInner-sc-14j12uk-1.fFMWYd > span')
 						if (elPrice != undefined && elPrice != null) {
 							let price = await page.evaluate(el => el.textContent, elPrice)
-							console.log(price)
 							if (price != '' && price != undefined && price != null) {
 								if (price.trim() == 'View Price In Cart') {
 									if (await page.$('div.mapEndDate > div > span > span[data-testid="savings-end-date"]') != null && await page.$('div.mapEndDate > div > span > span[data-testid="savings-end-date"]') != undefined) {
@@ -369,7 +368,7 @@ let lcpLowes = async (payload, datas, loop) => {
 							let product_name = await page.evaluate(el => el.getAttribute("data-description"), elProduct)
 							let in_stock_status = 1
 
-							let elPrice = await page.$('div.main-price')
+							let elPrice = await page.$('div.PriceUIstyles__WrapperComponentInner-sc-14j12uk-1.fFMWYd > span')
 							if (elPrice != undefined && elPrice != null) {
 								let price = await page.evaluate(el => el.textContent, elPrice)
 								if (price != '' && price != undefined && price != null) {
