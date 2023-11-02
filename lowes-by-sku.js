@@ -98,6 +98,7 @@ let getProduct = async datas => {
 				if (searchModel == -1) {
 					rawdata.push({
 						sku: model.product_id,
+						original_sku: model.product_id,
 						brand: model.brand
 					})
 				}
@@ -107,6 +108,11 @@ let getProduct = async datas => {
 			let from = Math.ceil(perData * batch)
 			let to = Math.ceil(perData + from)
 			let tempData = rawdata.slice(from, to)
+			tempData = tempData.map(item => ({
+				sku: item.product_id,
+				original_sku: item.product_id,
+				brand: item.brand
+			  }));
 
 			// let tempData = dataPerPart.map((data) => {
 			// 	let searchModel = dbDatas.findIndex(s => s.sku === data.sku);
