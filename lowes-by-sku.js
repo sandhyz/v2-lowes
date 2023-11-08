@@ -547,16 +547,16 @@ let start = async () => {
 		autoRefetch: false
 	}, datas, 1)
 
-	// await saveDataSKUBased({
-	// 	name: 'Lowes Per Sku',
-	// 	data: JSON.parse(await readData(`${__dirname}/lowes/data-by-sku.json`)),
-	// 	Model: LowesModel,
-	// 	batch: argv.batch,
-	// 	StatusModel: StatusModel,
-	// 	StatusModelBatched: StatusModelBatched
-	// })
+	await saveDataSKUBased({
+		name: 'Lowes Per Sku',
+		data: JSON.parse(await readData(`${__dirname}/lowes/data-by-sku.json`)),
+		Model: LowesModel,
+		batch: argv.batch,
+		StatusModel: StatusModel,
+		StatusModelBatched: StatusModelBatched
+	})
 
-	// await messageBot('Successfully Scrape Data', argv.batch)
+	await messageBot('Successfully Scrape Data', argv.batch)
 }
      
 start()
