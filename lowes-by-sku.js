@@ -206,7 +206,7 @@ let lcpLowes = async (payload, datas, loop) => {
 				? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 				: os === 'linux'
 					? '/usr/bin/google-chrome'
-					: 'C:/Users/Aditya Wisnu/.cache/puppeteer/chrome/win64-1069273/chrome-win/chrome.exe'
+					: 'C:/Users/yudha/.cache/puppeteer/chrome/win64-115.0.5790.170/chrome-win64/chrome.exe'
 	})
 
 	if (loop === 1) {
@@ -224,7 +224,8 @@ let lcpLowes = async (payload, datas, loop) => {
 			`${__dirname}/lowes/data-by-sku.json`,
 			datas.map(sku => ({
 				sku: sku.sku,
-				original_sku: sku.original_sku
+				original_sku: sku.original_sku,
+				brand: sku.brand
 			}))
 		)
 	}
@@ -288,7 +289,7 @@ let lcpLowes = async (payload, datas, loop) => {
 						if (elPrice != undefined && elPrice != null) {
 							let price = await page.evaluate(el => el.textContent, elPrice)
 							if (price != '' && price != undefined && price != null) {
-								if (price.trim() == 'View Price In Cart') {
+								if (price.trim() == 'View Price In Cart' || price.trim() == 'View Lower Price In Cart') {
 									if (await page.$('div.mapEndDate > div > span > span[data-testid="savings-end-date"]') != null && await page.$('div.mapEndDate > div > span > span[data-testid="savings-end-date"]') != undefined) {
 										in_stock_status = 0
 									}
@@ -330,6 +331,12 @@ let lcpLowes = async (payload, datas, loop) => {
 							let unavailableOnline = await page.evaluate(el => el.textContent, await page.$('text/This item is unavailable for purchase online'))
 							if (unavailableOnline != undefined && unavailableOnline != '') {
 								in_stock_status = 0
+							}
+						}
+
+						if (data[idx].brand != '') {
+							if (data[idx].brand.toUpperCase() != brand.trim().toUpperCase() && !brand.toUpperCase().includes(data[idx].brand.toUpperCase())) {
+								data[idx].price = 0
 							}
 						}
 
@@ -419,6 +426,13 @@ let lcpLowes = async (payload, datas, loop) => {
 								let unavailableOnline = await page.evaluate(el => el.textContent, await page.$('text/This item is unavailable for purchase online'))
 								if (unavailableOnline != undefined && unavailableOnline != '') {
 									in_stock_status = 0
+								}
+							}
+							
+
+							if (data[idx].brand != '') {
+								if (data[idx].brand.toUpperCase() != brand.trim().toUpperCase() && !brand.toUpperCase().includes(data[idx].brand.toUpperCase())) {
+									data[idx].price = 0
 								}
 							}
 

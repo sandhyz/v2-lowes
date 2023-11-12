@@ -310,6 +310,12 @@ let lcpLowes = async (payload, datas, loop) => {
 							}
 						}
 
+						if (data[idx].brand != '') {
+							if (data[idx].brand.toUpperCase() != brand.trim().toUpperCase() && !brand.toUpperCase().includes(data[idx].brand.toUpperCase())) {
+								data[idx].price = 0
+							}
+						}
+
 						data[idx].brand = brand
 						data[idx].product_name = product_name
 						data[idx].in_stock_status = in_stock_status
@@ -396,6 +402,12 @@ let lcpLowes = async (payload, datas, loop) => {
 								let unavailableOnline = await page.evaluate(el => el.textContent, await page.$('text/This item is unavailable for purchase online'))
 								if (unavailableOnline != undefined && unavailableOnline != '') {
 									in_stock_status = 0
+								}
+							}
+
+							if (data[idx].brand != '') {
+								if (data[idx].brand.toUpperCase() != brand.trim().toUpperCase() && !brand.toUpperCase().includes(data[idx].brand.toUpperCase())) {
+									data[idx].price = 0
 								}
 							}
 
