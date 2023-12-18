@@ -201,7 +201,7 @@ let lcpLowes = async (payload, datas, loop) => {
 				? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 				: os === 'linux'
 					? '/usr/bin/google-chrome'
-					: 'C:/Users/Aditya Wisnu/.cache/puppeteer/chrome/win64-1069273/chrome-win/chrome.exe'
+					: 'C:/Users/yudha/.cache/puppeteer/chrome/win64-115.0.5790.170/chrome-win64/chrome.exe'
 	})
 
 
@@ -311,6 +311,9 @@ let lcpLowes = async (payload, datas, loop) => {
 						}
 
 						if (data[idx].brand != '') {
+							if (data[idx].brand == 'GE Profile'){
+								brand = brand == 'GE' ? brand = 'GE Profile' : brand
+							}
 							if (data[idx].brand.toUpperCase() != brand.trim().toUpperCase() && !brand.toUpperCase().includes(data[idx].brand.toUpperCase())) {
 								data[idx].price = 0
 							}
@@ -406,6 +409,9 @@ let lcpLowes = async (payload, datas, loop) => {
 							}
 
 							if (data[idx].brand != '') {
+								if (data[idx].brand == 'GE Profile'){
+									brand = brand == 'GE' ? brand = 'GE Profile' : brand
+								}
 								if (data[idx].brand.toUpperCase() != brand.trim().toUpperCase() && !brand.toUpperCase().includes(data[idx].brand.toUpperCase())) {
 									data[idx].price = 0
 								}

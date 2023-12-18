@@ -116,7 +116,7 @@ const getUsePuppeteer = async payload => {
                         ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
                         : os === 'linux'
                             ? '/usr/bin/google-chrome'
-                            : 'C:/Users/Aditya Wisnu/.cache/puppeteer/chrome/win64-1069273/chrome-win/chrome.exe'
+                            : 'C:/Users/yudha/.cache/puppeteer/chrome/win64-115.0.5790.170/chrome-win64/chrome.exe'
             })
 
             console.log('puppeteer visit ' + url)
