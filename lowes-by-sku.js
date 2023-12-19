@@ -335,7 +335,7 @@ let lcpLowes = async (payload, datas, loop) => {
 						}
 
 						if (data[idx].brand != '') {
-							if (data[idx].brand.toUpperCase() != brand.trim().toUpperCase() && !brand.toUpperCase().includes(data[idx].brand.toUpperCase())) {
+							if (data[idx].brand.toUpperCase() != brand.trim().toUpperCase() && !brand.toUpperCase().includes(data[idx].brand.toUpperCase()) && !data[idx].brand.toUpperCase().includes(brand.toUpperCase())) {
 								data[idx].price = 0
 							}
 						}
@@ -431,10 +431,7 @@ let lcpLowes = async (payload, datas, loop) => {
 							
 
 							if (data[idx].brand != '') {
-								if (data[idx].brand == 'GE Profile'){
-									brand = brand == 'ShopGE' ? brand = 'GE Profile' : brand
-								}
-								if (data[idx].brand.toUpperCase() != brand.trim().toUpperCase() && !brand.toUpperCase().includes(data[idx].brand.toUpperCase())) {
+								if (data[idx].brand.toUpperCase() != brand.trim().toUpperCase() && !brand.toUpperCase().includes(data[idx].brand.toUpperCase()) && !data[idx].brand.toUpperCase().includes(brand.toUpperCase())) {
 									data[idx].price = 0
 								}
 							}
