@@ -340,7 +340,7 @@ let lcpLowes = async (payload, datas, loop) => {
 							}
 						}
 
-						data[idx].brand = brand
+						data[idx].brand = data[idx].brand.includes(brand) ? data[idx].brand : data[idx].brand = brand 
 						data[idx].product_name = product_name
 						data[idx].in_stock_status = in_stock_status
 
@@ -368,7 +368,7 @@ let lcpLowes = async (payload, datas, loop) => {
 					})
 					if (selectedList != undefined) {
 						await page.goto(`data:text/html,${selectedList}`);
-						let a = await page.$('div > a')
+						let a = await page.$('div > h3 > a')
 						let url = await page.evaluate(el => el.getAttribute("href"), a)
 
 						await page.goto(`https://www.lowes.com${url}`, { timeout: 0 })
@@ -436,7 +436,7 @@ let lcpLowes = async (payload, datas, loop) => {
 								}
 							}
 
-							data[idx].brand = brand
+							data[idx].brand = data[idx].brand.includes(brand) ? data[idx].brand : data[idx].brand = brand 
 							data[idx].product_name = product_name
 							data[idx].in_stock_status = in_stock_status
 
