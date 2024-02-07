@@ -174,17 +174,6 @@ const setLowesStore = async page => {
 		await page.waitForTimeout(5000)
 	} catch (err) {
 		console.log(err.message)
-		if(err.message.includes('Waiting failed')){
-			await delay(10000)
-			console.log('Stop VPN')
-			await vpn.stop()
-			await delay(60000)
-			console.log('Start VPN')
-			await vpn.start()
-			await delay(60000)
-			let ip = await checkIp(1)
-			await delay(5000)
-		}
 		await setLowesStore(page)
 	}
 }
