@@ -181,7 +181,7 @@ const setLowesStore = async page => {
 			await delay(60000)
 			console.log('Start VPN')
 			await vpn.start()
-			await delay(600000)
+			await delay(60000)
 			let ip = await checkIp(1)
 			await delay(5000)
 		}
