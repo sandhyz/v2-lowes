@@ -235,13 +235,13 @@ let lcpLowes = async (payload, datas, loop) => {
 
 	await setLowesStore(page)
 	if (loop === 1) {
-		// await updateScrapeStatus({
-		// 	name: 'Lowes Per Sku',
-		// 	status: 'On Progress',
-		// 	batch: argv.batch,
-		// 	Model: StatusModel,
-		// 	ModelBatched: StatusModelBatched
-		// })
+		await updateScrapeStatus({
+			name: 'Lowes Per Sku',
+			status: 'On Progress',
+			batch: argv.batch,
+			Model: StatusModel,
+			ModelBatched: StatusModelBatched
+		})
 	}
 
 	const data = JSON.parse(await readData(`${__dirname}/lowes/data-by-sku.json`, 'utf8'))
@@ -558,9 +558,9 @@ let start = async () => {
 	console.log('total data : ' + datas.length)
 
 	await lcpLowes({
-		headless: false,
+		headless: true,
 		proxy: false,
-		os: 'windows',
+		os: 'linux',
 		autoRefetch: false
 	}, datas, 1)
 
