@@ -357,7 +357,7 @@ let lcpLowes = async (payload, datas, loop) => {
 					await writeData(`${__dirname}/lowes/data-by-sku.json`, data)
 				} else {
 					const lists = await page.evaluate(() => {
-						const element = Array.from(document.querySelectorAll('div[data-selector="prd-description-zone"]'))
+						const element = Array.from(document.querySelectorAll('div.description-section'))
 						return element.map(list => {
 							return list.innerHTML
 						});

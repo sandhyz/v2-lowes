@@ -333,7 +333,7 @@ let lcpLowes = async (payload, datas, loop) => {
 					await writeData(`${__dirname}/lowes/data-by-sku.json`, data)
 				} else {
 					const lists = await page.evaluate(() => {
-						const element = Array.from(document.querySelectorAll('div[data-selector="prd-description-zone"]'))
+						const element = Array.from(document.querySelectorAll('div.description-section'))
 						return element.map(list => {
 							return list.innerHTML
 						});
@@ -522,9 +522,9 @@ let lcpLowes = async (payload, datas, loop) => {
 
 let start = async () => {
 	await lcpLowes({
-		headless: true,
+		headless: false,
 		proxy: false,
-		os: 'linux',
+		os: 'windows',
 		autoRefetch: false
 	}, [], 2)
 
@@ -537,7 +537,7 @@ let start = async () => {
 		StatusModelBatched: StatusModelBatched
 	})
 
-	await messageBot('Successfully Scrape Manual Data', 1)
+	// await messageBot('Successfully Scrape Manual Data', 1)
 }
      
 start()

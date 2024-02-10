@@ -135,18 +135,20 @@ let getProduct = async datas => {
 	})
 }
 
-const setLowesStore = async page => {
+const setLowesStore = async (page, coba) => {
 	try {
+		let inputStore = 'input[placeholder="Zip Code, City, State or Store #"]'
+		inputStore = coba > 0 ? 'input[placeholder="ZIP Code, City, State or Store #"]' : inputStore
 		console.log('setting store..')
 		await page.goto(`https://www.lowes.com/store`)
 		await delay(9000)
-		await page.waitForSelector('input[placeholder="Zip Code, City, State or Store #"]')
-		await page.click('input[placeholder="Zip Code, City, State or Store #"]')
+		await page.waitForSelector(inputStore)
+		await page.click(inputStore)
 		await page.waitForTimeout(200)
-		await page.type('input[placeholder="Zip Code, City, State or Store #"]', 'ballwin', {
+		await page.$eval(inputStore, input => input.value = '');
+		await page.type(inputStore, 'ballwin', {
 			delay: 100
 		})
-
 		await page.waitForTimeout(200)
 		await page.keyboard.press('Enter')
 		await page.waitForSelector('button[data-storenumber="1503"]')
@@ -168,7 +170,8 @@ const setLowesStore = async page => {
 		await page.waitForTimeout(5000)
 	} catch (err) {
 		console.log(err.message)
-		await setLowesStore(page)
+		let percobaan = 0
+		await setLowesStore(page ,percobaan += 1)
 	}
 }
 
@@ -341,7 +344,7 @@ let lcpLowes = async (payload, datas, loop) => {
 					await writeData(`${__dirname}/lowes/data-by-sku.json`, data)
 				} else {
 					const lists = await page.evaluate(() => {
-						const element = Array.from(document.querySelectorAll('div[data-selector="prd-description-zone"]'))
+						const element = Array.from(document.querySelectorAll('div.description-section'))
 						return element.map(list => {
 							return list.innerHTML
 						});
