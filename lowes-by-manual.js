@@ -159,7 +159,7 @@ const setLowesStore = async (page, coba) => {
 
 		//setting zip code
 		//await page.click('#headerApp > div:nth-child(2) > div > div.sc-105kpm3-10.ikjBHq > header > div.sc-105kpm3-2.kngyuR > div > div.sc-1ecnx9w-5.erLXxh > div > a')
-		await page.click('#headerApp > div:nth-child(2) > div > div.sc-105kpm3-10.ikjBHq > header > div.sc-105kpm3-2.kngyuR > div > div.sc-1ecnx9w-5.erLXxh > div > a')
+		await page.click('#headerApp > div:nth-child(2) > div > div.sc-105kpm3-10.dDNRAN > header > div.sc-105kpm3-2.cvxQFw > div > div > div.sc-1ecnx9w-5.gXXcFJ > div > a')
 		await page.waitForSelector('input[placeholder="Enter Zip Code"]')
 		await page.click('input[placeholder="Enter Zip Code"]')
 		await page.waitForTimeout(200)
