@@ -357,16 +357,16 @@ let lcpLowes = async (payload, datas, loop) => {
 					await writeData(`${__dirname}/lowes/data-by-sku.json`, data)
 				} else {
 					const lists = await page.evaluate(() => {
-						const element = Array.from(document.querySelectorAll('div.description-section'))
+						const element = Array.from(document.querySelectorAll('div[data-selector="prd-description-zone"][data-tile="1"]'));
 						return element.map(list => {
 							return list.innerHTML
 						});
 					});
-
 					let selectedList = undefined
 					lists.map(list => {
 						if (list.match(`Model #<!-- -->${item.sku}<`) || list.match(`Model #<!-- -->${item.original_sku}<`) || list.match(`Model #${item.sku}<`) || list.match(`Model #${item.original_sku}<`)) {
 							selectedList = list
+							return;
 						}
 					})
 					if (selectedList != undefined) {
