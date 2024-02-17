@@ -132,7 +132,7 @@ let getProduct = async datas => {
 			// })
 			// tempData.push({ sku: 'LRMVC2306S', original_sku: 'LRMVC2306S', brand: 'LG' })
 			// tempData.push({ sku: 'AZC5216LW', original_sku: 'AZC5216LW', brand: 'Amana' })
-			// tempData = [{sku: 'KCGC558JSS', original_sku: 'KCGC558JSS', brand: 'KitchenAid'}]
+			// tempData = [{sku: 'UXT4130ADS', original_sku: 'UXT4130ADS', brand: 'Amana'}]
 			console.log(tempData.length)
 			resolve(tempData)
 		} catch (err) {
@@ -141,44 +141,52 @@ let getProduct = async datas => {
 	})
 }
 
-const setLowesStore = async (page, coba) => {
-	try {
-		let inputStore = 'input[placeholder="Zip Code, City, State or Store #"]'
-		inputStore = coba > 0 ? 'input[placeholder="ZIP Code, City, State or Store #"]' : inputStore
-		console.log('setting store..')
-		await page.goto(`https://www.lowes.com/store`)
-		await delay(9000)
-		await page.waitForSelector(inputStore)
-		await page.click(inputStore)
-		await page.waitForTimeout(200)
-		await page.$eval(inputStore, input => input.value = '');
-		await page.type(inputStore, 'ballwin', {
-			delay: 100
-		})
-		await page.waitForTimeout(200)
-		await page.keyboard.press('Enter')
-		await page.waitForSelector('button[data-storenumber="1503"]')
-		await page.waitForTimeout(200)
-		await page.click('button[data-storenumber="1503"]')
-		await delay(5000)
+const setLowesStore = async (page, index, store = null, zip_code = null) => {
+    try {
+        store = store == null ? 'input[placeholder="ZIP Code, City, State or Store #"]' : store
+        console.log('setting store Lowes')
+        await page.goto(`https://www.lowes.com/store`)
+        await delay(9000)
+        await page.waitForSelector(store)
+        await page.click(store)
+        await page.waitForTimeout(200)
+        await page.$eval(store, input => input.value = '');
+        await page.type(store, 'ballwin', {
+            delay: 100
+        })
+        await page.waitForTimeout(200)
+        await page.keyboard.press('Enter')
+        await page.waitForSelector('button[data-storenumber="1503"]')
+        await page.waitForTimeout(200)
+        await page.click('button[data-storenumber="1503"]')
+        await delay(5000)
+        //setting zip code
+		zip_code = zip_code == null ? '#headerApp > div:nth-child(2) > div > div.sc-105kpm3-10.dDNRAN > header > div.sc-105kpm3-2.cvxQFw > div > div > div.sc-1ecnx9w-5.gXXcFJ > div > a' : zip_code
+	
+        await page.click(zip_code)
+        await page.waitForSelector('input[placeholder="Enter Zip Code"]')
+        await page.click('input[placeholder="Enter Zip Code"]')
+        await page.waitForTimeout(200)
+        await page.type('input[placeholder="Enter Zip Code"]', '63011', {
+            delay: 100
+        })
+        await page.keyboard.press('Enter')
 
-		//setting zip code
-		//await page.click('#headerApp > div:nth-child(2) > div > div.sc-105kpm3-10.ikjBHq > header > div.sc-105kpm3-2.kngyuR > div > div.sc-1ecnx9w-5.erLXxh > div > a')
-		await page.click('#headerApp > div:nth-child(2) > div > div.sc-105kpm3-10.dDNRAN > header > div.sc-105kpm3-2.cvxQFw > div > div > div.sc-1ecnx9w-5.gXXcFJ > div > a')
-		await page.waitForSelector('input[placeholder="Enter Zip Code"]')
-		await page.click('input[placeholder="Enter Zip Code"]')
-		await page.waitForTimeout(200)
-		await page.type('input[placeholder="Enter Zip Code"]', '63011', {
-			delay: 100
-		})
-		await page.keyboard.press('Enter')
-
-		await page.waitForTimeout(5000)
-	} catch (err) {
-		console.log(err.message)
-		let percobaan = 0
-		await setLowesStore(page ,percobaan += 1)
-	}
+        await page.waitForTimeout(5000)
+    } catch (err) {
+        console.log(err.message)
+		if(index > 10){
+			await messageBot(err.message, 'Lowes', argvBatch, false);
+		} else if (err.message == 'Waiting for selector `input[placeholder="ZIP Code, City, State or Store #"]` failed: Waiting failed: 30000ms exceeded'){
+			await setLowesStore(page, index += 1,'input[placeholder="Zip Code, City, State or Store #"]', zip_code)
+		} else if (err.message == 'Waiting for selector `input[placeholder="Zip Code, City, State or Store #"]` failed: Waiting failed: 30000ms exceeded'){
+			await setLowesStore(page, index += 1,'input[placeholder="ZIP Code, City, State or Store #"]', zip_code)
+		} else if(err.message == 'No element found for selector: #headerApp > div:nth-child(2) > div > div.sc-105kpm3-10.dDNRAN > header > div.sc-105kpm3-2.cvxQFw > div > div > div.sc-1ecnx9w-5.gXXcFJ > div > a'){
+			await setLowesStore(page ,index += 1, store, '#headerApp > div:nth-child(2) > div > div.sc-105kpm3-10.ikjBHq > header > div.sc-105kpm3-2.kngyuR > div > div.sc-1ecnx9w-5.erLXxh > div > a')
+		} else{
+			await setLowesStore(page ,index += 1, store, zip_code);
+		}
+    }
 }
 
 let lcpLowes = async (payload, datas, loop) => {
