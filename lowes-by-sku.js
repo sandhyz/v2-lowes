@@ -104,7 +104,7 @@ let getProduct = async datas => {
 				}
 			})
 
-			let perData = Math.ceil(rawdata.length / 5)
+			let perData = Math.ceil(rawdata.length / 6)
 			let from = Math.ceil(perData * batch)
 			let to = Math.ceil(perData + from)
 			let tempData = rawdata.slice(from, to)
